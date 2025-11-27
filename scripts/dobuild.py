@@ -213,6 +213,10 @@ elif binding.lower().startswith("pyside"):
         os.makedirs("Release", exist_ok=True)
 
         shutil.move(f"libElaWidgetTools{bin_app}", f"Release/ElaWidgetTools{bin_app}")
+    elif sys.platform == "darwin":
+        os.makedirs("Release", exist_ok=True)
+        # macOS single-config builds drop lib prefix by placing into Release manually
+        shutil.move(f"libElaWidgetTools{bin_app}", f"Release/ElaWidgetTools{bin_app}")
 
     os.chdir("..")
     os.mkdir("objects")
