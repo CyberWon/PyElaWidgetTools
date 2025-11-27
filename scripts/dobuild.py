@@ -161,12 +161,12 @@ elif binding.lower().startswith("pyside"):
 
     MY_SITE_PACKAGES_PATH = (
         subprocess.run(
-            f'{pyPath} -c "import site;print(site.getsitepackages()[-1])"',
+            [pyPath, "-c", "import sysconfig;print(sysconfig.get_paths()['purelib'])"],
             stdout=subprocess.PIPE,
-            shell=True,
+            check=True,
         )
-        .stdout.strip()
-        .decode()
+        .stdout.decode()
+        .strip()
         .replace("\\", "/")
     )
     env = os.environ.copy()

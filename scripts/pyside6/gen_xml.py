@@ -323,20 +323,22 @@ elif sys.platform=='darwin':
     if sdk_path:
         sysinclude += f" -I{sdk_path}/usr/include"
 
-os.system(
-    f"""shiboken6 {sysinclude}
-        --generator-set=shiboken
-        --output-directory=OUTPUTDIR
-        -I{ELA_INCLUDE_PATH}
-        -I{MY_QT_INSTALL}/include -I{MY_QT_INSTALL}/include/QtCore -I{MY_QT_INSTALL}/include/QtGui -I{MY_QT_INSTALL}/include/QtWidgets
-        --typesystem-paths={MY_SITE_PACKAGES_PATH}/PySide6/typesystems
-        --enable-pyside-extensions
-        --avoid-protected-hack
-        wrapper.hpp
-        bindings.xml""".replace(
-        "\n", " "
-    )
+cmd = f"""shiboken6 {sysinclude}
+    --generator-set=shiboken
+    --output-directory=OUTPUTDIR
+    -I{ELA_INCLUDE_PATH}
+    -I{MY_QT_INSTALL}/include -I{MY_QT_INSTALL}/include/QtCore -I{MY_QT_INSTALL}/include/QtGui -I{MY_QT_INSTALL}/include/QtWidgets
+    --typesystem-paths={MY_SITE_PACKAGES_PATH}/PySide6/typesystems
+    --enable-pyside-extensions
+    --avoid-protected-hack
+    wrapper.hpp
+    bindings.xml""".replace(
+    "\n", " "
 )
+
+import subprocess
+print("Running:", cmd)
+subprocess.run(cmd, shell=True, check=True)
 
 with open("OUTPUTDIR/ElaWidgetTools/elaflowlayout_wrapper.h", "r") as ff:
     __ = ff.read()
