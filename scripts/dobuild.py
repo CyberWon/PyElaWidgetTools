@@ -106,12 +106,12 @@ subprocess.run(
 if binding.lower().startswith("pyqt"):
     os.chdir("pyqt")
     os.mkdir("sip")
-    subprocess.run(f"python gen_Def.sip.py", shell=True)
+    subprocess.run(f"{pyPath} gen_Def.sip.py", shell=True, check=True)
     subprocess.run(
-        f'python gen_widgets.py {int(qtversion.startswith("5"))}', shell=True
+        f'{pyPath} gen_widgets.py {int(qtversion.startswith("5"))}', shell=True, check=True
     )
     subprocess.run(
-        f'python gen_pyi_from_sip.py {int(qtversion.startswith("5"))}', shell=True
+        f'{pyPath} gen_pyi_from_sip.py {int(qtversion.startswith("5"))}', shell=True, check=True
     )
     subprocess.run(f"{pyPath} sip_code_fix.py", shell=True)
     if sys.platform == "win32":
@@ -140,12 +140,12 @@ elif binding.lower().startswith("pyside"):
     # 使用pyqt的东西来生成pyi，shiboken自带的谜之不管用
     os.chdir("pyqt")
     os.mkdir("sip")
-    subprocess.run(f"python gen_Def.sip.py", shell=True)
+    subprocess.run(f"{pyPath} gen_Def.sip.py", shell=True, check=True)
     subprocess.run(
-        f'python gen_widgets.py {int(qtversion.startswith("5"))}', shell=True
+        f'{pyPath} gen_widgets.py {int(qtversion.startswith("5"))}', shell=True, check=True
     )
     subprocess.run(
-        f'python gen_pyi_from_sip.py {int(qtversion.startswith("5"))}', shell=True
+        f'{pyPath} gen_pyi_from_sip.py {int(qtversion.startswith("5"))}', shell=True, check=True
     )
     __parsefile(
         "ElaWidgetTools.pyi",
@@ -165,10 +165,13 @@ elif binding.lower().startswith("pyside"):
         .decode()
         .replace("\\", "/")
     )
+    env = os.environ.copy()
+    env["PATH"] = pyDir + os.pathsep + env.get("PATH", "")
     subprocess.run(
-        f'python gen_xml.py {os.path.abspath("../../ElaWidgetTools/ElaWidgetTools").replace("\\", "/")} {Qtinstallpath} {pyDir} {MY_SITE_PACKAGES_PATH}',
+        f'{pyPath} gen_xml.py {os.path.abspath("../../ElaWidgetTools/ElaWidgetTools").replace("\\", "/")} {Qtinstallpath} {pyDir} {MY_SITE_PACKAGES_PATH}',
         shell=True,
         check=True,
+        env=env,
     )
     if sys.platform == "win32":
         MY_PYTHON_INCLUDE_PATH = pyDir + "/include"

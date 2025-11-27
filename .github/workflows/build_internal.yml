@@ -39,10 +39,6 @@ jobs:
         with:
           python-version: ${{matrix.pythonversion}}
           architecture: ${{ matrix.arch }}
-      - uses: actions/setup-python@v5
-        with:
-          python-version: 3.12
-          architecture: ${{ matrix.arch == 'arm64' && 'arm64' || 'x64' }}
       
       - uses: seanmiddleditch/gha-setup-vsdevenv@master
         with:

@@ -313,6 +313,15 @@ if sys.platform=='linux':
     pyDir = __ + "/include/"+os.listdir(__ + "/include")[0]
     print(pyDir)
     sysinclude = f' -I{inc} -I{pyDir} '
+elif sys.platform=='darwin':
+    # Ensure standard library and SDK headers are visible to ApiExtractor on macOS.
+    resource_dir = os.popen("clang -print-resource-dir").read().strip()
+    sdk_path = os.popen("xcrun --show-sdk-path").read().strip()
+    sysinclude = ""
+    if resource_dir:
+        sysinclude += f" -I{resource_dir}/include"
+    if sdk_path:
+        sysinclude += f" -I{sdk_path}/usr/include"
 
 os.system(
     f"""shiboken6 {sysinclude}
