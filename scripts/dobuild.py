@@ -18,8 +18,9 @@ binding = sys.argv[5]
 
 
 # 准备环境
+# Use the python running this script (set by the last setup-python step) for packaging tasks.
+pyPathEx = sys.executable
 if sys.platform == "win32":
-    pyPathEx = f"C:/hostedtoolcache/windows/Python/3.12.10/x64/python.exe"
     pyDir = f"C:/hostedtoolcache/windows/Python/{pythonversion}/{arch}"
     pyPath = f"{pyDir}/python.exe"
     qtarchdir = qtarch[qtarch.find("_") + 1 :]
@@ -36,9 +37,6 @@ elif sys.platform == "linux":
     sipbuild = f"{pyDir}/sip-build"
     bin_app = ".abi3.so"
 elif sys.platform == "darwin":
-    pyPathEx = (
-        f"/Users/runner/hostedtoolcache/Python/3.12.10/{arch}/bin/python"
-    )
     pyDir = f"/Users/runner/hostedtoolcache/Python/{pythonversion}/{arch}/bin"
     pyPath = f"{pyDir}/python"
     Qtinstallpath = (
