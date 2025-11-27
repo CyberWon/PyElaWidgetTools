@@ -322,6 +322,14 @@ elif sys.platform=='darwin':
         sysinclude += f" -I{resource_dir}/include"
     if sdk_path:
         sysinclude += f" -I{sdk_path}/usr/include"
+    # Also add Python's include dir for hostedtoolcache interpreter to satisfy Py_LIMITED_API.
+    py_include = subprocess.run(
+        [sys.executable, "-c", "import sysconfig;print(sysconfig.get_paths()['include'])"],
+        stdout=subprocess.PIPE,
+        check=True,
+    ).stdout.decode().strip()
+    if py_include:
+        sysinclude += f" -I{py_include}"
 
 cmd = f"""shiboken6 {sysinclude}
     --generator-set=shiboken
