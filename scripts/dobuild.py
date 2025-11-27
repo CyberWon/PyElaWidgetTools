@@ -167,9 +167,11 @@ elif binding.lower().startswith("pyside"):
     )
     env = os.environ.copy()
     env["PATH"] = pyDir + os.pathsep + env.get("PATH", "")
+    ela_include_abs = os.path.abspath("../../ElaWidgetTools/ElaWidgetTools").replace(
+        "\\", "/"
+    )
     subprocess.run(
-        f'{pyPath} gen_xml.py {os.path.abspath("../../ElaWidgetTools/ElaWidgetTools").replace("\\", "/")} {Qtinstallpath} {pyDir} {MY_SITE_PACKAGES_PATH}',
-        shell=True,
+        [pyPath, "gen_xml.py", ela_include_abs, Qtinstallpath, pyDir, MY_SITE_PACKAGES_PATH],
         check=True,
         env=env,
     )
