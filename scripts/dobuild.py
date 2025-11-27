@@ -18,8 +18,6 @@ binding = sys.argv[5]
 
 
 # 准备环境
-# Use the python running this script (set by the last setup-python step) for packaging tasks.
-pyPathEx = sys.executable
 if sys.platform == "win32":
     pyDir = f"C:/hostedtoolcache/windows/Python/{pythonversion}/{arch}"
     pyPath = f"{pyDir}/python.exe"
@@ -45,23 +43,24 @@ elif sys.platform == "darwin":
     qmake = f"{Qtinstallpath}/bin/qmake"
     sipbuild = f"{pyDir}/sip-build"
     bin_app = ".abi3.so"
+pyPathEx = pyPath
 
 
 subprocess.run(f"{pyPath} -m pip install --upgrade pip", shell=True)
 if binding.lower().startswith("pyqt"):
     if qtversion.startswith("6"):
         subprocess.run(
-            f"{pyPath} -m pip install pyqt6==6.4.2 PyQt-builder sip", shell=True
+            f"{pyPath} -m pip install pyqt6==6.4.2 PyQt-builder sip", shell=True, check=False
         )
     else:
         subprocess.run(
             f"{pyPath} -m pip install pyqt5==5.15.5 PyQt-builder==1.15 sip==6.7",
-            shell=True,
+            shell=True, check=False
         )
 elif binding.lower().startswith("pyside"):
     subprocess.run(
         f"{pyPath} -m pip install pyside6=={qtversion} shiboken6=={qtversion} shiboken6_generator=={qtversion}",
-        shell=True,
+        shell=True, check=True,
     )
 
 
@@ -87,15 +86,19 @@ __parsefile(
 if sys.platform == "win32":
     archA = ("win32", "x64")[arch == "x64"]
     flags = f'-G "Visual Studio 17 2022" -A {archA} -T host={arch}'
+elif sys.platform == "darwin":
+    flags = "-DCMAKE_OSX_ARCHITECTURES=arm64 -DCMAKE_BUILD_TYPE=Release"
 else:
-    flags = ""
+    flags = "-DCMAKE_BUILD_TYPE=Release"
 subprocess.run(
     f"cmake -DELAWIDGETTOOLS_BUILD_STATIC_LIB=ON ../ElaWidgetTools/CMakeLists.txt {flags}",
     shell=True,
+    check=True,
 )
 subprocess.run(
     f"cmake --build ./ --config Release -j {os.cpu_count()}",
     shell=True,
+    check=True,
 )
 # for _dir, _, _fs in os.walk(r"."):
 #     for _f in _fs:
@@ -165,19 +168,24 @@ elif binding.lower().startswith("pyside"):
     subprocess.run(
         f'python gen_xml.py {os.path.abspath("../../ElaWidgetTools/ElaWidgetTools").replace("\\", "/")} {Qtinstallpath} {pyDir} {MY_SITE_PACKAGES_PATH}',
         shell=True,
+        check=True,
     )
     if sys.platform == "win32":
         MY_PYTHON_INCLUDE_PATH = pyDir + "/include"
         ELA_LIB_PATH = os.path.abspath(
             f"../ElaWidgetTools/Release/ElaWidgetTools.lib"
         ).replace("\\", "/")
-    elif sys.platform == "linux":
-        __ = os.path.dirname(os.path.dirname(sys.executable))
-        MY_PYTHON_INCLUDE_PATH = __ + "/include/" + os.listdir(__ + "/include")[0]
-        ELA_LIB_PATH = os.path.abspath(f"../ElaWidgetTools/libElaWidgetTools.a")
-    elif sys.platform == "darwin":
-        __ = os.path.dirname(os.path.dirname(sys.executable))
-        MY_PYTHON_INCLUDE_PATH = __ + "/include/" + os.listdir(__ + "/include")[0]
+    else:
+        # Query include path from the interpreter we build against to avoid mismatches.
+        MY_PYTHON_INCLUDE_PATH = (
+            subprocess.run(
+                f'{pyPath} -c "import sysconfig;print(sysconfig.get_paths()[\"include\"])"',
+                stdout=subprocess.PIPE,
+                shell=True,
+            )
+            .stdout.decode()
+            .strip()
+        )
         ELA_LIB_PATH = os.path.abspath(f"../ElaWidgetTools/libElaWidgetTools.a")
 
     PySide6Lib = (
@@ -204,10 +212,12 @@ elif binding.lower().startswith("pyside"):
     subprocess.run(
         f'cmake -DdllSUFFIX={bin_app} -DMY_QT_INSTALL={Qtinstallpath} -Dshiboken6Lib={shiboken6Lib} -DPySide6Lib={PySide6Lib} -DMY_PYTHON_INCLUDE_PATH={MY_PYTHON_INCLUDE_PATH} -DMY_SITE_PACKAGES_PATH={MY_SITE_PACKAGES_PATH} -DMY_PYTHON_INSTALL_PATH={pyDir} -DELA_LIB_PATH={ELA_LIB_PATH} -DELA_INCLUDE_PATH={os.path.abspath("../../ElaWidgetTools/ElaWidgetTools").replace("\\", "/")} ./CMakeLists.txt {flags}',
         shell=True,
+        check=True,
     )
     subprocess.run(
         f"cmake --build ./ --config Release -j {os.cpu_count()}",
         shell=True,
+        check=True,
     )
     if sys.platform == "linux":
         os.makedirs("Release", exist_ok=True)
@@ -245,8 +255,12 @@ if binding.lower().startswith("pyside"):
 subprocess.run(
     f"{pyPathEx} setup.py bdist_wheel {req} {('64','32')[arch == 'x86']} {binding}",
     shell=True,
+    check=True,
 )
 os.chdir("..")
+
+if not os.path.isdir("wheel/dist"):
+    raise FileNotFoundError("wheel/dist not found; wheel build may have failed")
 
 shutil.copytree("wheel/dist", "objects/wheel")
 
