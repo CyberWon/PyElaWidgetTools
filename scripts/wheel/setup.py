@@ -30,6 +30,11 @@ if sys.platform == "win32":
     platnames = ("win32", "win_amd64")[bit == "64"]
 elif sys.platform == "linux":
     platnames = "manylinux1_x86_64"
+elif sys.platform == "darwin":
+    # Target Apple Silicon runner; x86_64 fallback left empty intentionally
+    platnames = ("macosx_11_0_arm64", "macosx_11_0_arm64")[bit == "64"]
+else:
+    platnames = None
 
 setup(
     name=f"{bindingfor}-ElaWidgetTools",
