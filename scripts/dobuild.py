@@ -9,6 +9,10 @@ else:
     rootDir = os.path.abspath(rootDir)
 rootthisfiledir = rootDir
 os.chdir(rootthisfiledir)
+ELA_INCLUDE_ABS = (
+    os.path.abspath(os.path.join(rootthisfiledir, "../ElaWidgetTools/ElaWidgetTools"))
+    .replace("\\", "/")
+)
 
 pythonversion = sys.argv[1]
 qtarch = sys.argv[2]
@@ -167,11 +171,8 @@ elif binding.lower().startswith("pyside"):
     )
     env = os.environ.copy()
     env["PATH"] = pyDir + os.pathsep + env.get("PATH", "")
-    ela_include_abs = os.path.abspath("../../ElaWidgetTools/ElaWidgetTools").replace(
-        "\\", "/"
-    )
     subprocess.run(
-        [pyPath, "gen_xml.py", ela_include_abs, Qtinstallpath, pyDir, MY_SITE_PACKAGES_PATH],
+        [pyPath, "gen_xml.py", ELA_INCLUDE_ABS, Qtinstallpath, pyDir, MY_SITE_PACKAGES_PATH],
         check=True,
         env=env,
     )
@@ -215,7 +216,7 @@ elif binding.lower().startswith("pyside"):
             shiboken6Lib = _
 
     subprocess.run(
-        f'cmake -DdllSUFFIX={bin_app} -DMY_QT_INSTALL={Qtinstallpath} -Dshiboken6Lib={shiboken6Lib} -DPySide6Lib={PySide6Lib} -DMY_PYTHON_INCLUDE_PATH={MY_PYTHON_INCLUDE_PATH} -DMY_SITE_PACKAGES_PATH={MY_SITE_PACKAGES_PATH} -DMY_PYTHON_INSTALL_PATH={pyDir} -DELA_LIB_PATH={ELA_LIB_PATH} -DELA_INCLUDE_PATH={os.path.abspath("../../ElaWidgetTools/ElaWidgetTools").replace("\\", "/")} ./CMakeLists.txt {flags}',
+        f'cmake -DdllSUFFIX={bin_app} -DMY_QT_INSTALL={Qtinstallpath} -Dshiboken6Lib={shiboken6Lib} -DPySide6Lib={PySide6Lib} -DMY_PYTHON_INCLUDE_PATH={MY_PYTHON_INCLUDE_PATH} -DMY_SITE_PACKAGES_PATH={MY_SITE_PACKAGES_PATH} -DMY_PYTHON_INSTALL_PATH={pyDir} -DELA_LIB_PATH={ELA_LIB_PATH} -DELA_INCLUDE_PATH={ELA_INCLUDE_ABS} ./CMakeLists.txt {flags}',
         shell=True,
         check=True,
     )
