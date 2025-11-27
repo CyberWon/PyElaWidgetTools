@@ -35,6 +35,18 @@ elif sys.platform == "linux":
     qmake = f"{Qtinstallpath}/bin/qmake"
     sipbuild = f"{pyDir}/sip-build"
     bin_app = ".abi3.so"
+elif sys.platform == "darwin":
+    pyPathEx = (
+        f"/Users/runner/hostedtoolcache/Python/3.12.10/{arch}/bin/python"
+    )
+    pyDir = f"/Users/runner/hostedtoolcache/Python/{pythonversion}/{arch}/bin"
+    pyPath = f"{pyDir}/python"
+    Qtinstallpath = (
+        f"/Users/runner/work/PyElaWidgetTools/Qt/{qtversion}/{qtarch}"
+    )
+    qmake = f"{Qtinstallpath}/bin/qmake"
+    sipbuild = f"{pyDir}/sip-build"
+    bin_app = ".abi3.so"
 
 
 subprocess.run(f"{pyPath} -m pip install --upgrade pip", shell=True)
@@ -165,14 +177,30 @@ elif binding.lower().startswith("pyside"):
         __ = os.path.dirname(os.path.dirname(sys.executable))
         MY_PYTHON_INCLUDE_PATH = __ + "/include/" + os.listdir(__ + "/include")[0]
         ELA_LIB_PATH = os.path.abspath(f"../ElaWidgetTools/libElaWidgetTools.a")
+    elif sys.platform == "darwin":
+        __ = os.path.dirname(os.path.dirname(sys.executable))
+        MY_PYTHON_INCLUDE_PATH = __ + "/include/" + os.listdir(__ + "/include")[0]
+        ELA_LIB_PATH = os.path.abspath(f"../ElaWidgetTools/libElaWidgetTools.a")
 
-    PySide6Lib = "pyside6.abi3.lib"
-    shiboken6Lib = "shiboken6.abi3.lib"
+    PySide6Lib = (
+        "pyside6.abi3.lib"
+        if sys.platform == "win32"
+        else ("libpyside6.abi3.dylib" if sys.platform == "darwin" else "libpyside6.abi3.so")
+    )
+    shiboken6Lib = (
+        "shiboken6.abi3.lib"
+        if sys.platform == "win32"
+        else (
+            "libshiboken6.abi3.dylib"
+            if sys.platform == "darwin"
+            else "libshiboken6.abi3.so"
+        )
+    )
     for _ in os.listdir(f"{MY_SITE_PACKAGES_PATH}/PySide6"):
-        if _.startswith("libpyside6.abi3.so"):
+        if _.startswith("libpyside6.abi3") or _.startswith("pyside6.abi3"):
             PySide6Lib = _
     for _ in os.listdir(f"{MY_SITE_PACKAGES_PATH}/shiboken6"):
-        if _.startswith("libshiboken6.abi3.so"):
+        if _.startswith("libshiboken6.abi3") or _.startswith("shiboken6.abi3"):
             shiboken6Lib = _
 
     subprocess.run(
