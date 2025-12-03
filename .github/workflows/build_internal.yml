@@ -15,9 +15,9 @@ jobs:
         include:
           - os: windows-latest
             qthost: windows
-            qtarch: win64_msvc2019_64
+            qtarch: win64_msvc2022_64
             version: 6.8.2
-            pythonversion: 3.8.10
+            pythonversion: 3.9.19
             arch: x64
             binding: PySide6
     permissions:
