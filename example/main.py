@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import *
 
 from PyQt5ElaWidgetTools import *
 from mainwindow import *
+# t
 
 try:
     QT_VERSION_STR
