@@ -16,7 +16,7 @@ jobs:
           - os: windows-latest
             qthost: windows
             qtarch: win64_msvc2019_64
-            version: 6.8.2.1
+            version: 6.8.3
             pythonversion: 3.9.19
             arch: x64
             binding: PySide6
