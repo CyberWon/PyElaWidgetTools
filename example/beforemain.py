@@ -33,4 +33,4 @@ for _d, _, _fs in os.walk("."):
                 ff.write(s)
 
 
-from main import *
+# from main import *

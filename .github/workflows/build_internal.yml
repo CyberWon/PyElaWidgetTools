@@ -20,6 +20,13 @@ jobs:
             pythonversion: 3.9.13
             arch: x64
             binding: PySide6
+          - os: windows-latest
+            qthost: windows
+            qtarch: win64_msvc2022_64
+            version: 6.10.1
+            pythonversion: 3.12.10
+            arch: x64
+            binding: PySide6
     permissions:
       id-token: write
       attestations: write

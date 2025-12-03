@@ -1,11 +1,12 @@
 import sys, os
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from PySide6.QtCore import *
+from PySide6.QtGui import *
+from PySide6.QtWidgets import *
 
-from PyQt5ElaWidgetTools import *
+from PySide6ElaWidgetTools import *
 from mainwindow import *
 # t
 
@@ -24,6 +25,7 @@ if QT_VERSION_STR < "6.0.0":
 
 app = QApplication(sys.argv)
 eApp.init()
+eApp.setWindowDisplayMode(ElaApplicationType.WindowDisplayMode.Mica)
 w = MainWindow()
 w.show()
 app.exec()
