@@ -1,7 +1,7 @@
 import re, os
 
-asQt5 = True
-asSide6 = False
+asQt5 = False
+asSide6 = True
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
